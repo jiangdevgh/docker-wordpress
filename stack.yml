@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  wordpress:
+    depends_on:
+      - db
+      - redis
+    image: jiangdev/wordpress:latest
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wpu
+      WORDPRESS_DB_NAME: wpdb
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql_password
+    volumes:
+      - wordpress:/var/www/html
+    secrets:
+      - mysql_password
+
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: wpdb
+      MYSQL_USER: wpu
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - db:/var/lib/mysql
+    secrets:
+      - mysql_password
+
+  redis:
+    image: redis:latest
+    restart: always
+    volumes:
+      - redis:/data
+      - ./redis:/usr/local/etc/redis
+
+volumes:
+  wordpress:
+  db:
+  redis:
+
+secrets:
+  mysql_password:
+    file: ./mysql_password.txt
