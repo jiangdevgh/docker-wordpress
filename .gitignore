@@ -1,2 +1,3 @@
 /.idea
 /mysql_password.txt
+/wordpress/.env

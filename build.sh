@@ -27,11 +27,11 @@ for name in "${required[@]}"; do
   fi
 done
 
-docker build --build-arg WORDPRESS_URL="$url" \
-              --build-arg WORDPRESS_TITLE="$title" \
-              --build-arg WORDPRESS_ADMIN="$admin" \
-              --build-arg WORDPRESS_EMAIL="$email" \
-              --build-arg WORDPRESS_INITPW="$pw" \
-              -t "jiangdev/wordpress:${tag}" \
-              -t "jiangdev/wordpress:latest" \
-              ./wordpress
+# generate .env
+printf 'WORDPRESS_URL="%q"\nWORDPRESS_TITLE="%q"\nWORDPRESS_ADMIN="%q"\nWORDPRESS_EMAIL="%q"\nWORDPRESS_INITPW="%q"' "$url" "$title" "$admin" "$email" "$pw" > ./wordpress/.env
+
+# build image
+docker build -t "wptest" \
+             -t "jiangdev/wordpress:${tag}" \
+             -t "jiangdev/wordpress:latest" \
+             ./wordpress
