@@ -9,7 +9,7 @@ set -ex; \
 WORDPRESS_HOME='/var/www/vhosts/localhost/html'
 command="wp --path=$WORDPRESS_HOME --allow-root "
 
-plugins=(litespeed-cache seo-by-rank-math tk-google-fonts wp-editormd)
+plugins=(litespeed-cache seo-by-rank-math tk-google-fonts wp-editormd 'https://git-updater.com/wp-content/uploads/2021/07/git-updater-10.4.1.zip;git-updater')
 themes=('https://github.com/jiangdevgh/wp-2016-lite/archive/refs/heads/master.zip;wp-2016-lite')
 
 config() {
@@ -28,11 +28,13 @@ install_site() {
 
 install_plugins() {
     for plugin in "${plugins[@]}"; do
-        if ! $command plugin is-installed "$plugin"; then
-            $command plugin install "$plugin"
+        url="${plugin%%;*}"
+        name="${plugin##*;}"
+        if ! $command plugin is-installed "$name"; then
+            $command plugin install "$url"
         fi
-        if ! $command plugin is-active "$plugin"; then
-            $command plugin activate "$plugin"
+        if ! $command plugin is-active "$name"; then
+            $command plugin activate "$name"
         fi
     done
 }
