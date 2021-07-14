@@ -12,11 +12,17 @@ command="wp --path=$WORDPRESS_HOME --allow-root "
 plugins=(litespeed-cache seo-by-rank-math tk-google-fonts wp-editormd)
 themes=('https://github.com/jiangdevgh/wp-2016-lite/archive/refs/heads/master.zip;wp-2016-lite')
 
+config() {
+    $command config create --force --dbhost="$WORDPRESS_DB_HOST" --dbname="$WORDPRESS_DB_NAME" --dbuser="$WORDPRESS_DB_USER" --prompt=dbpass < /run/secrets/mysql_password
+}
+
 install_site() {
     if ! $command core is-installed; then
         $command core download --path="$WORDPRESS_HOME" --skip-content --locale=zh_CN
-        $command config create --dbhost="$WORDPRESS_DB_HOST" --dbname="$WORDPRESS_DB_NAME" --dbuser="$WORDPRESS_DB_USER" --prompt=dbpass < /run/secrets/mysql_password
+        config
         $command core install --skip-email --url="$WORDPRESS_URL" --title="$WORDPRESS_TITLE" --admin_user="$WORDPRESS_ADMIN" --admin_email="$WORDPRESS_EMAIL" --admin_password="$WORDPRESS_INITPW"
+    else
+        config
     fi
 }
 
